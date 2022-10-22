@@ -2,7 +2,7 @@ export const BlocklyLocale = {
         Locale: "en-US",
 
         ZomboidGuide: "Zomboid Modding",
-        ExamplePlugins: "Example plugins",
+        BackupWorkspace: "Backup",
         DownloadPlugin: "Download Plugin",
 
         LogicCategory: "Logic",

@@ -49,6 +49,8 @@ import { BlocklyLocale as en_us } from "./localizations/en-us";
 // Set Blockly language to English
 import english from "blockly/msg/en";
 
+var JSZip = require("jszip");
+var FileSaver = require("file-saver");
 
 export default {
     name: "app",
@@ -114,6 +116,24 @@ export default {
           this.code = BlocklyLua.workspaceToCode(this.$refs["foo"].workspace);
         },
         download() {
+          const zip = JSZip();
+          zip.file("mod.info", "Hname=My First Mod\nposter=poster.png\nid=MyFirst\ndescription=Basic example mod\nurl=https://theindiestone.com/forums/");
+
+          const media = zip.folder("media");
+
+          let lua = media.folder("lua");
+          let shared = lua.folder("shared");
+          let clientLua = lua.folder("client");
+          let serverLua = lua.folder("server");
+
+          let scripts = media.folder("scripts");
+          console.log(shared+clientLua+serverLua+scripts);
+
+          zip.generateAsync({type:"blob"}).then(function(content) {
+            FileSaver.saveAs(content, "example.zip");
+          });
+          return;
+          /*
           let str = this.code;
           // let x = document.getElementById("output");
           function custom_file() {
@@ -124,16 +144,7 @@ export default {
               }
 
           }
-          function download(filename, text) {
-              var element = document.createElement('a');
-              element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-              element.setAttribute('download', filename);
-              element.style.display = 'none';
-              document.body.appendChild(element);
-              element.click();
-              document.body.removeChild(element);
-          }
-        custom_file();
+        custom_file();*/
         }
     },
 };
