@@ -7,16 +7,15 @@
               {{BlocklyLocale.ZomboidGuide}}
             </button>
           </a>
-          <!-- a href="https://github.com/LiteLScript-Dev/LXL-Plugins" target="_blank">
-            <button id="menubuttons" style="color:#000000;background-color:#DBD2CC">
-              {{BlocklyLocale.ExamplePlugins}}
-            </button>
-          </a>
-          <a href="https://www.minebbs.com/resources/litexloader-x-bds.2670/" target="_blank">
-            <button id="menubuttons" style="color:#000000;background-color:#DBD2CC;">
-              {{BlocklyLocale.DownloadLXL}}
-            </button>
-          </a-->
+          <br>
+          <button id="menubuttons" style="color:#000000;background-color:#DBD2CC" @click="backup_workspace()">
+            {{BlocklyLocale.BackupWorkspace}}
+          </button>
+          <!--button id="menubuttons" style="color:#000000;background-color:#DBD2CC;" @click="restore_workspace()">
+            {{BlocklyLocale.RestoreWorkspace}}
+          </button-->
+          Restore: <input type="file" name="inputfile" id="inputfile" @change="restore_file()">
+          
 
           <button id="downloadbutton" size="normal" theme="color" @click="download()">
             <svg id="edcD1BShn9F1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 640 640" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"><g transform="matrix(2.5 0 0 1.75-476.329552-39.889714)"><line x1="0" y1="-128.689884" x2="0" y2="-27.689884" transform="matrix(25 0 0 1 320 233.341149)" fill="none" stroke="#fff" stroke-width="3"/><polygon points="0,-12.923474 11.192057,6.461737 -11.192057,6.461737 0,-12.923474" transform="matrix(-6.704883 0 0-5.297823 320 216.774109)" fill="#fff" stroke-width="0"/></g><rect width="342.385" height="46.4345" rx="0" ry="0" transform="matrix(1.082173 0 0-1.020139 138.410548 542.086399)" fill="#fff" stroke-width="0"/></svg>
@@ -85,6 +84,11 @@ export default {
     },
     mounted() {
       this.updateOptions();
+        if (document.cookie.length > 1) {
+          var xml = Blockly.Xml.textToDom(document.cookie);
+          Blockly.getMainWorkspace().clear();
+          Blockly.Xml.domToWorkspace(xml, Blockly.mainWorkspace);
+        }
     },
     methods: {
         language(language) {
@@ -112,8 +116,10 @@ export default {
             }
         },
         showCode() {
-          // this.code = BlocklyJS.workspaceToCode(this.$refs["foo"].workspace);
           this.code = BlocklyLua.workspaceToCode(this.$refs["foo"].workspace);
+          var xml = Blockly.Xml.workspaceToDom(Blockly.getMainWorkspace());
+          var xml_text = Blockly.Xml.domToText(xml);
+          document.cookie = xml_text;
         },
         download() {
           const zip = JSZip();
@@ -145,6 +151,51 @@ export default {
 
           }
         custom_file();*/
+        },
+        backup_workspace() {
+          try {
+            var xml = Blockly.Xml.workspaceToDom(Blockly.getMainWorkspace());
+            var xml_text = Blockly.Xml.domToText(xml);
+            var link = document.createElement('a');
+            console.log("saving workspace?");
+            console.log(xml);
+            console.log(xml_text);
+            link.download="blockly_zomboid_workspace_backup.txt";
+            link.href="data:application/octet-stream;utf-8," + encodeURIComponent(xml_text);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+          } catch (e) {
+            window.location.href="data:application/octet-stream;utf-8," + encodeURIComponent(xml_text);
+            alert(e);
+          }
+        },
+        restore_workspace() {
+          try {
+            var xml_text = prompt("Please enter XML code", "");
+            var xml = Blockly.Xml.textToDom(xml_text);
+            Blockly.getMainWorkspace().clear();
+            Blockly.Xml.domToWorkspace(xml, Blockly.mainWorkspace);
+          } catch (e) {
+            alert(e);
+          }
+        },
+        restore_file() {
+            var fileInput = document.getElementById('inputfile');
+            var fr=new FileReader();
+
+            fr.onload = function () {
+              let xml_backup = fr.result;
+              try {
+                var xml = Blockly.Xml.textToDom(xml_backup);
+                Blockly.getMainWorkspace().clear();
+                Blockly.Xml.domToWorkspace(xml, Blockly.mainWorkspace);
+              } catch (e) {
+                alert(e);
+                console.log(e);
+              }
+            };
+            fr.readAsText(fileInput.files[0]);
         }
     },
 };
