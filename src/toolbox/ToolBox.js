@@ -2,325 +2,761 @@ export default function Toolbox(blocklyLocale) {
     return xml(blocklyLocale);
 }
 
+class BlockObject {
+	BlockObject(xmlType = "", type = "", name = "", value = "", id = "", subfields = []) {
+		this.xmlType = xmlType;
+		this.type = type;
+		this.name = name;
+		this.value = value;
+		this.id = id;
+		this.subfields = subfields;
+	}
+
+	addBlockSubfield(subfield = BlockObject) {
+		if (subfield == null) return;
+		if (this.subfields == null) {
+			this.subfields = [subfield];
+		} else if (this.subfields != null) {
+			this.subfields.push(subfield);
+		}
+		return this;
+	}
+
+	getBlockXML() {
+		if (this == null)
+			return '';
+		let blockXML = `<${this.xmlType} type="${this.stringOrEmpty(this.type)}" name="${this.stringOrEmpty(this.name)} id="${this.stringOrEmpty(this.id)}">${this.stringOrEmpty(this.value)}`;
+		this.subfields.forEach(element => {
+			blockXML += this.getBlockXML(element);
+		});
+		blockXML += `</${this.xmlType}>`;
+		return blockXML;
+	}
+
+	stringOrEmpty(string = "") {
+		if (string.length > 0)
+			return string;
+		return "";
+	}
+}
+
+export class ToolboxClass {
+	ToolboxClass() {
+		this.CategoryBlockMap = new Map();
+	}
+
+	addCategory(name, color) {
+		this.CategoryBlockMap.set(name, 
+		{ 
+			color: color,
+			blocks: [],
+		});
+	}
+
+	addBlockToCategory(categoryName, block = BlockObject) {
+		let category = this.CategoryBlockMap.get(categoryName);
+		if (category == null)
+			return;
+		category.blocks.push(block);
+		this.CategoryBlockMap.set(categoryName, 
+		{ 
+			color: category.color,
+			blocks: category.blocks,
+		});	
+	}
+
+	addSubfieldToBlockObject(blockObject = {}, subfield = {}) {
+		if (blockObject.subfield == null) {
+			blockObject.subfield = [subfield];
+		} else 
+		{
+			blockObject.subfield.push(subfield);
+		}
+		return blockObject;
+	}
+
+	getCategoryXML(name) {
+		let category = this.CategoryBlockMap.get(name);
+		if (category == null)
+			return '';
+		let xml = `<category name="${name}" colour="${category.color}">`;
+		category.blocks.forEach(element => {
+			xml += this.getBlockXML(element);
+		});
+		xml += `</category>`;
+		return xml;
+	}
+	
+	getBlockXML(block) {
+		if (block == null)
+			return '';
+		let blockXML = `<${block.xmlType} type="${block.type}" name="${block.name} id="${block.id}">${block.value}`;
+		block.subfields.forEach(element => {
+			blockXML += this.getBlockXML(element);
+		});
+		blockXML += `</${block.xmlType}>`;
+		return blockXML;
+	}
+
+	blocklyDefaultToolbox_Functions(BlocklyLocale) {
+		this.addCategory(BlocklyLocale.LogicCategory, "#5b80a5");
+		this.addCategory(BlocklyLocale.LoopCategory, "#5ba55b");
+		this.addCategory(BlocklyLocale.MathCategory, "#5b67a5");
+		this.addCategory(BlocklyLocale.StringsCategory, "#5ba58c");
+		this.addCategory(BlocklyLocale.ListCategory, "#745ba5");
+		this.addCategory(BlocklyLocale.VariableCategory, "#a55b80");
+		this.addCategory(BlocklyLocale.ProcedureCategory, "#995ba5");
+	
+		this.addBlockToCategory(BlocklyLocale.LogicCategory, 
+			new BlockObject("block", "controls_if", "", "", "", null));
+		this.addBlockToCategory(BlocklyLocale.LogicCategory, 
+			new BlockObject("block", "logic_compare", "", "", "", null)
+			.addBlockSubfield(new BlockObject("field", "", "OP", "EQ", "", null)));
+		this.addBlockToCategory(BlocklyLocale.LogicCategory, 
+			new BlockObject("block", "logic_operation", "", "", "", null)
+			.addBlockSubfield(new BlockObject("field", "", "OP", "AND", "", null)));
+		this.addBlockToCategory(BlocklyLocale.LogicCategory, 
+			new BlockObject("block", "logic_negate", "", "", "", null));
+		this.addBlockToCategory(BlocklyLocale.LogicCategory, 
+			new BlockObject("block", "logic_boolean", "", "", "", null)
+			.addBlockSubfield(new BlockObject("field", "", "BOOL", "TRUE", "", null)));
+		this.addBlockToCategory(BlocklyLocale.LogicCategory, 
+			new BlockObject("block", "logic_null", "", "", "", null));
+		this.addBlockToCategory(BlocklyLocale.LogicCategory, 
+			new BlockObject("block", "logic_ternary", "", "", "", null));
+
+		this.addBlockToCategory(BlocklyLocale.LoopCategory, 
+			new BlockObject("block", "controls_repeat_ext", "", "", "", 
+			[new BlockObject("value", "", "TIMES", "", "", [
+				new BlockObject("shadow", "math_number", "", "", "", [
+					new BlockObject("field", "NUM", "", "10", "", null)])])]));
+		this.addBlockToCategory(BlocklyLocale.LoopCategory, 
+			new BlockObject("block", "controls_whileUntil", "", "", "", [
+				new BlockObject("field", "", "MODE", "WHILE", "", null)]));	
+
+		this.addBlockToCategory(BlocklyLocale.LoopCategory, 
+			new BlockObject("block", "controls_for", "", "", "", [
+				new BlockObject("field", "", "MODE", "WHILE", "", null)]));	
+
+		// addBlockObject(xmlType = "", type = "", name = "", value = "", id="", subfields = []) 
+	
+		return `
+		<category name="${BlocklyLocale.LoopCategory}" colour="#5ba55b">
+			<block type="controls_for">
+				<field name="VAR" id="{+F:*ux)b%gAO*AsTj}{">i</field>
+				<value name="FROM">
+					<shadow type="math_number">
+						<field name="NUM">1</field>
+					</shadow>
+				</value>
+				<value name="TO">
+					<shadow type="math_number">
+						<field name="NUM">10</field>
+					</shadow>
+				</value>
+				<value name="BY">
+					<shadow type="math_number">
+					<field name="NUM">1</field>
+					</shadow>
+				</value>
+			</block>
+			<block type="controls_forEach">
+			<field name="VAR" id="KAYJBR5HEi#n@pQRzKJn">j</field>
+			</block>
+			<block type="controls_flow_statements">
+			<field name="FLOW">BREAK</field>
+			</block>
+		</category>
+		<category name="${BlocklyLocale.MathCategory}" colour="#5b67a5">
+			<block type="math_number">
+			<field name="NUM">0</field>
+			</block>
+			<block type="math_arithmetic">
+			<field name="OP">ADD</field>
+			<value name="A">
+				<shadow type="math_number">
+				<field name="NUM">1</field>
+				</shadow>
+			</value>
+			<value name="B">
+				<shadow type="math_number">
+				<field name="NUM">1</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="math_single">
+			<field name="OP">ROOT</field>
+			<value name="NUM">
+				<shadow type="math_number">
+				<field name="NUM">9</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="math_trig">
+			<field name="OP">SIN</field>
+			<value name="NUM">
+				<shadow type="math_number">
+				<field name="NUM">45</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="math_constant">
+			<field name="CONSTANT">PI</field>
+			</block>
+			<block type="math_number_property">
+			<mutation divisor_input="false"></mutation>
+			<field name="PROPERTY">EVEN</field>
+			<value name="NUMBER_TO_CHECK">
+				<shadow type="math_number">
+				<field name="NUM">0</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="math_round">
+			<field name="OP">ROUND</field>
+			<value name="NUM">
+				<shadow type="math_number">
+				<field name="NUM">3.1</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="math_on_list">
+			<mutation op="SUM"></mutation>
+			<field name="OP">SUM</field>
+			</block>
+			<block type="math_modulo">
+			<value name="DIVIDEND">
+				<shadow type="math_number">
+				<field name="NUM">64</field>
+				</shadow>
+			</value>
+			<value name="DIVISOR">
+				<shadow type="math_number">
+				<field name="NUM">10</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="math_constrain">
+			<value name="VALUE">
+				<shadow type="math_number">
+				<field name="NUM">50</field>
+				</shadow>
+			</value>
+			<value name="LOW">
+				<shadow type="math_number">
+				<field name="NUM">1</field>
+				</shadow>
+			</value>
+			<value name="HIGH">
+				<shadow type="math_number">
+				<field name="NUM">100</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="math_random_int">
+			<value name="FROM">
+				<shadow type="math_number">
+				<field name="NUM">1</field>
+				</shadow>
+			</value>
+			<value name="TO">
+				<shadow type="math_number">
+				<field name="NUM">100</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="math_random_float"></block>
+		</category>
+		<category name="${BlocklyLocale.StringsCategory}" colour="#5ba58c">
+			<block type="text">
+			<field name="TEXT"></field>
+			</block>
+			<block type="text_join">
+			<mutation items="2"></mutation>
+			</block>
+			<block type="text_append">
+			<field name="VAR" id="2YeTYsWn=e.jWZ1_jcJC">item</field>
+			<value name="TEXT">
+				<shadow type="text">
+				<field name="TEXT"></field>
+				</shadow>
+			</value>
+			</block>
+			<block type="text_length">
+			<value name="VALUE">
+				<shadow type="text">
+				<field name="TEXT">abc</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="text_isEmpty">
+			<value name="VALUE">
+				<shadow type="text">
+				<field name="TEXT"></field>
+				</shadow>
+			</value>
+			</block>
+			<block type="text_indexOf">
+			<field name="END">FIRST</field>
+			<value name="VALUE">
+				<block type="variables_get">
+				<field name="VAR" id="cZu0g~S;L.v,R7:PZm~3">text</field>
+				</block>
+			</value>
+			<value name="FIND">
+				<shadow type="text">
+				<field name="TEXT">abc</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="text_charAt">
+			<mutation at="true"></mutation>
+			<field name="WHERE">FROM_START</field>
+			<value name="VALUE">
+				<block type="variables_get">
+				<field name="VAR" id="cZu0g~S;L.v,R7:PZm~3">text</field>
+				</block>
+			</value>
+			</block>
+			<block type="text_getSubstring">
+			<mutation at1="true" at2="true"></mutation>
+			<field name="WHERE1">FROM_START</field>
+			<field name="WHERE2">FROM_START</field>
+			<value name="STRING">
+				<block type="variables_get">
+				<field name="VAR" id="cZu0g~S;L.v,R7:PZm~3">text</field>
+				</block>
+			</value>
+			</block>
+			<block type="text_changeCase">
+			<field name="CASE">UPPERCASE</field>
+			<value name="TEXT">
+				<shadow type="text">
+				<field name="TEXT">abc</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="text_trim">
+			<field name="MODE">BOTH</field>
+			<value name="TEXT">
+				<shadow type="text">
+				<field name="TEXT">abc</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="text_print">
+			<value name="TEXT">
+				<shadow type="text">
+				<field name="TEXT">abc</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="text_prompt_ext">
+			<mutation type="TEXT"></mutation>
+			<field name="TYPE">TEXT</field>
+			<value name="TEXT">
+				<shadow type="text">
+				<field name="TEXT">abc</field>
+				</shadow>
+			</value>
+			</block>
+		</category>
+		<category name="${BlocklyLocale.ListCategory}" colour="#745ba5">
+			<block type="lists_create_with">
+			<mutation items="0"></mutation>
+			</block>
+			<block type="lists_create_with">
+			<mutation items="3"></mutation>
+			</block>
+			<block type="lists_repeat">
+			<value name="NUM">
+				<shadow type="math_number">
+				<field name="NUM">5</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="lists_length"></block>
+			<block type="lists_isEmpty"></block>
+			<block type="lists_indexOf">
+			<field name="END">FIRST</field>
+			<value name="VALUE">
+				<block type="variables_get">
+				<field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
+				</block>
+			</value>
+			</block>
+			<block type="lists_getIndex">
+			<mutation statement="false" at="true"></mutation>
+			<field name="MODE">GET</field>
+			<field name="WHERE">FROM_START</field>
+			<value name="VALUE">
+				<block type="variables_get">
+				<field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
+				</block>
+			</value>
+			</block>
+			<block type="lists_setIndex">
+			<mutation at="true"></mutation>
+			<field name="MODE">SET</field>
+			<field name="WHERE">FROM_START</field>
+			<value name="LIST">
+				<block type="variables_get">
+				<field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
+				</block>
+			</value>
+			</block>
+			<block type="lists_getSublist">
+			<mutation at1="true" at2="true"></mutation>
+			<field name="WHERE1">FROM_START</field>
+			<field name="WHERE2">FROM_START</field>
+			<value name="LIST">
+				<block type="variables_get">
+				<field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
+				</block>
+			</value>
+			</block>
+			<block type="lists_split">
+			<mutation mode="SPLIT"></mutation>
+			<field name="MODE">SPLIT</field>
+			<value name="DELIM">
+				<shadow type="text">
+				<field name="TEXT">,</field>
+				</shadow>
+			</value>
+			</block>
+			<block type="lists_sort">
+			<field name="TYPE">NUMERIC</field>
+			<field name="DIRECTION">1</field>
+			</block>
+		</category>
+		<sep></sep>
+		<category name="${BlocklyLocale.VariableCategory}" colour="#a55b80" custom="VARIABLE"></category>
+		<category name="${BlocklyLocale.ProcedureCategory}" colour="#995ba5" custom="PROCEDURE"></category>
+		<sep></sep>`;
+	}
+}
+
+
+
 function blocklyDefaultToolbox(BlocklyLocale) {
     return `
     <category name="${BlocklyLocale.LogicCategory}" colour="#5b80a5">
-    <block type="controls_if"></block>
-    <block type="logic_compare">
-      <field name="OP">EQ</field>
-    </block>
-    <block type="logic_operation">
-      <field name="OP">AND</field>
-    </block>
-    <block type="logic_negate"></block>
-    <block type="logic_boolean">
-      <field name="BOOL">TRUE</field>
-    </block>
-    <block type="logic_null"></block>
-    <block type="logic_ternary"></block>
-  </category>
-  <category name="${BlocklyLocale.LoopCategory}" colour="#5ba55b">
-    <block type="controls_repeat_ext">
-      <value name="TIMES">
-        <shadow type="math_number">
-          <field name="NUM">10</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="controls_whileUntil">
-      <field name="MODE">WHILE</field>
-    </block>
-    <block type="controls_for">
-      <field name="VAR" id="{+F:*ux)b%gAO*AsTj}{">i</field>
-      <value name="FROM">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
-        </shadow>
-      </value>
-      <value name="TO">
-        <shadow type="math_number">
-          <field name="NUM">10</field>
-        </shadow>
-      </value>
-      <value name="BY">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="controls_forEach">
-      <field name="VAR" id="KAYJBR5HEi#n@pQRzKJn">j</field>
-    </block>
-    <block type="controls_flow_statements">
-      <field name="FLOW">BREAK</field>
-    </block>
-  </category>
-  <category name="${BlocklyLocale.MathCategory}" colour="#5b67a5">
-    <block type="math_number">
-      <field name="NUM">0</field>
-    </block>
-    <block type="math_arithmetic">
-      <field name="OP">ADD</field>
-      <value name="A">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
-        </shadow>
-      </value>
-      <value name="B">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="math_single">
-      <field name="OP">ROOT</field>
-      <value name="NUM">
-        <shadow type="math_number">
-          <field name="NUM">9</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="math_trig">
-      <field name="OP">SIN</field>
-      <value name="NUM">
-        <shadow type="math_number">
-          <field name="NUM">45</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="math_constant">
-      <field name="CONSTANT">PI</field>
-    </block>
-    <block type="math_number_property">
-      <mutation divisor_input="false"></mutation>
-      <field name="PROPERTY">EVEN</field>
-      <value name="NUMBER_TO_CHECK">
-        <shadow type="math_number">
-          <field name="NUM">0</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="math_round">
-      <field name="OP">ROUND</field>
-      <value name="NUM">
-        <shadow type="math_number">
-          <field name="NUM">3.1</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="math_on_list">
-      <mutation op="SUM"></mutation>
-      <field name="OP">SUM</field>
-    </block>
-    <block type="math_modulo">
-      <value name="DIVIDEND">
-        <shadow type="math_number">
-          <field name="NUM">64</field>
-        </shadow>
-      </value>
-      <value name="DIVISOR">
-        <shadow type="math_number">
-          <field name="NUM">10</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="math_constrain">
-      <value name="VALUE">
-        <shadow type="math_number">
-          <field name="NUM">50</field>
-        </shadow>
-      </value>
-      <value name="LOW">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
-        </shadow>
-      </value>
-      <value name="HIGH">
-        <shadow type="math_number">
-          <field name="NUM">100</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="math_random_int">
-      <value name="FROM">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
-        </shadow>
-      </value>
-      <value name="TO">
-        <shadow type="math_number">
-          <field name="NUM">100</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="math_random_float"></block>
-  </category>
-  <category name="${BlocklyLocale.StringsCategory}" colour="#5ba58c">
-    <block type="text">
-      <field name="TEXT"></field>
-    </block>
-    <block type="text_join">
-      <mutation items="2"></mutation>
-    </block>
-    <block type="text_append">
-      <field name="VAR" id="2YeTYsWn=e.jWZ1_jcJC">item</field>
-      <value name="TEXT">
-        <shadow type="text">
-          <field name="TEXT"></field>
-        </shadow>
-      </value>
-    </block>
-    <block type="text_length">
-      <value name="VALUE">
-        <shadow type="text">
-          <field name="TEXT">abc</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="text_isEmpty">
-      <value name="VALUE">
-        <shadow type="text">
-          <field name="TEXT"></field>
-        </shadow>
-      </value>
-    </block>
-    <block type="text_indexOf">
-      <field name="END">FIRST</field>
-      <value name="VALUE">
-        <block type="variables_get">
-          <field name="VAR" id="cZu0g~S;L.v,R7:PZm~3">text</field>
-        </block>
-      </value>
-      <value name="FIND">
-        <shadow type="text">
-          <field name="TEXT">abc</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="text_charAt">
-      <mutation at="true"></mutation>
-      <field name="WHERE">FROM_START</field>
-      <value name="VALUE">
-        <block type="variables_get">
-          <field name="VAR" id="cZu0g~S;L.v,R7:PZm~3">text</field>
-        </block>
-      </value>
-    </block>
-    <block type="text_getSubstring">
-      <mutation at1="true" at2="true"></mutation>
-      <field name="WHERE1">FROM_START</field>
-      <field name="WHERE2">FROM_START</field>
-      <value name="STRING">
-        <block type="variables_get">
-          <field name="VAR" id="cZu0g~S;L.v,R7:PZm~3">text</field>
-        </block>
-      </value>
-    </block>
-    <block type="text_changeCase">
-      <field name="CASE">UPPERCASE</field>
-      <value name="TEXT">
-        <shadow type="text">
-          <field name="TEXT">abc</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="text_trim">
-      <field name="MODE">BOTH</field>
-      <value name="TEXT">
-        <shadow type="text">
-          <field name="TEXT">abc</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="text_print">
-      <value name="TEXT">
-        <shadow type="text">
-          <field name="TEXT">abc</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="text_prompt_ext">
-      <mutation type="TEXT"></mutation>
-      <field name="TYPE">TEXT</field>
-      <value name="TEXT">
-        <shadow type="text">
-          <field name="TEXT">abc</field>
-        </shadow>
-      </value>
-    </block>
-  </category>
-  <category name="${BlocklyLocale.ListCategory}" colour="#745ba5">
-    <block type="lists_create_with">
-      <mutation items="0"></mutation>
-    </block>
-    <block type="lists_create_with">
-      <mutation items="3"></mutation>
-    </block>
-    <block type="lists_repeat">
-      <value name="NUM">
-        <shadow type="math_number">
-          <field name="NUM">5</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="lists_length"></block>
-    <block type="lists_isEmpty"></block>
-    <block type="lists_indexOf">
-      <field name="END">FIRST</field>
-      <value name="VALUE">
-        <block type="variables_get">
-          <field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
-        </block>
-      </value>
-    </block>
-    <block type="lists_getIndex">
-      <mutation statement="false" at="true"></mutation>
-      <field name="MODE">GET</field>
-      <field name="WHERE">FROM_START</field>
-      <value name="VALUE">
-        <block type="variables_get">
-          <field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
-        </block>
-      </value>
-    </block>
-    <block type="lists_setIndex">
-      <mutation at="true"></mutation>
-      <field name="MODE">SET</field>
-      <field name="WHERE">FROM_START</field>
-      <value name="LIST">
-        <block type="variables_get">
-          <field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
-        </block>
-      </value>
-    </block>
-    <block type="lists_getSublist">
-      <mutation at1="true" at2="true"></mutation>
-      <field name="WHERE1">FROM_START</field>
-      <field name="WHERE2">FROM_START</field>
-      <value name="LIST">
-        <block type="variables_get">
-          <field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
-        </block>
-      </value>
-    </block>
-    <block type="lists_split">
-      <mutation mode="SPLIT"></mutation>
-      <field name="MODE">SPLIT</field>
-      <value name="DELIM">
-        <shadow type="text">
-          <field name="TEXT">,</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="lists_sort">
-      <field name="TYPE">NUMERIC</field>
-      <field name="DIRECTION">1</field>
-    </block>
-  </category>
-  <sep></sep>
-  <category name="${BlocklyLocale.VariableCategory}" colour="#a55b80" custom="VARIABLE"></category>
-  <category name="${BlocklyLocale.ProcedureCategory}" colour="#995ba5" custom="PROCEDURE"></category>
-  <sep></sep>`;
+		<block type="controls_if"></block>
+		<block type="logic_compare">
+		<field name="OP">EQ</field>
+		</block>
+		<block type="logic_operation">
+		<field name="OP">AND</field>
+		</block>
+		<block type="logic_negate"></block>
+		<block type="logic_boolean">
+		<field name="BOOL">TRUE</field>
+		</block>
+		<block type="logic_null"></block>
+		<block type="logic_ternary"></block>
+	</category>
+	<category name="${BlocklyLocale.LoopCategory}" colour="#5ba55b">
+		<block type="controls_repeat_ext">
+		<value name="TIMES">
+			<shadow type="math_number">
+			<field name="NUM">10</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="controls_whileUntil">
+		<field name="MODE">WHILE</field>
+		</block>
+		<block type="controls_for">
+		<field name="VAR" id="{+F:*ux)b%gAO*AsTj}{">i</field>
+		<value name="FROM">
+			<shadow type="math_number">
+			<field name="NUM">1</field>
+			</shadow>
+		</value>
+		<value name="TO">
+			<shadow type="math_number">
+			<field name="NUM">10</field>
+			</shadow>
+		</value>
+		<value name="BY">
+			<shadow type="math_number">
+			<field name="NUM">1</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="controls_forEach">
+		<field name="VAR" id="KAYJBR5HEi#n@pQRzKJn">j</field>
+		</block>
+		<block type="controls_flow_statements">
+		<field name="FLOW">BREAK</field>
+		</block>
+	</category>
+	<category name="${BlocklyLocale.MathCategory}" colour="#5b67a5">
+		<block type="math_number">
+		<field name="NUM">0</field>
+		</block>
+		<block type="math_arithmetic">
+		<field name="OP">ADD</field>
+		<value name="A">
+			<shadow type="math_number">
+			<field name="NUM">1</field>
+			</shadow>
+		</value>
+		<value name="B">
+			<shadow type="math_number">
+			<field name="NUM">1</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="math_single">
+		<field name="OP">ROOT</field>
+		<value name="NUM">
+			<shadow type="math_number">
+			<field name="NUM">9</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="math_trig">
+		<field name="OP">SIN</field>
+		<value name="NUM">
+			<shadow type="math_number">
+			<field name="NUM">45</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="math_constant">
+		<field name="CONSTANT">PI</field>
+		</block>
+		<block type="math_number_property">
+		<mutation divisor_input="false"></mutation>
+		<field name="PROPERTY">EVEN</field>
+		<value name="NUMBER_TO_CHECK">
+			<shadow type="math_number">
+			<field name="NUM">0</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="math_round">
+		<field name="OP">ROUND</field>
+		<value name="NUM">
+			<shadow type="math_number">
+			<field name="NUM">3.1</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="math_on_list">
+		<mutation op="SUM"></mutation>
+		<field name="OP">SUM</field>
+		</block>
+		<block type="math_modulo">
+		<value name="DIVIDEND">
+			<shadow type="math_number">
+			<field name="NUM">64</field>
+			</shadow>
+		</value>
+		<value name="DIVISOR">
+			<shadow type="math_number">
+			<field name="NUM">10</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="math_constrain">
+		<value name="VALUE">
+			<shadow type="math_number">
+			<field name="NUM">50</field>
+			</shadow>
+		</value>
+		<value name="LOW">
+			<shadow type="math_number">
+			<field name="NUM">1</field>
+			</shadow>
+		</value>
+		<value name="HIGH">
+			<shadow type="math_number">
+			<field name="NUM">100</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="math_random_int">
+		<value name="FROM">
+			<shadow type="math_number">
+			<field name="NUM">1</field>
+			</shadow>
+		</value>
+		<value name="TO">
+			<shadow type="math_number">
+			<field name="NUM">100</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="math_random_float"></block>
+	</category>
+	<category name="${BlocklyLocale.StringsCategory}" colour="#5ba58c">
+		<block type="text">
+		<field name="TEXT"></field>
+		</block>
+		<block type="text_join">
+		<mutation items="2"></mutation>
+		</block>
+		<block type="text_append">
+		<field name="VAR" id="2YeTYsWn=e.jWZ1_jcJC">item</field>
+		<value name="TEXT">
+			<shadow type="text">
+			<field name="TEXT"></field>
+			</shadow>
+		</value>
+		</block>
+		<block type="text_length">
+		<value name="VALUE">
+			<shadow type="text">
+			<field name="TEXT">abc</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="text_isEmpty">
+		<value name="VALUE">
+			<shadow type="text">
+			<field name="TEXT"></field>
+			</shadow>
+		</value>
+		</block>
+		<block type="text_indexOf">
+		<field name="END">FIRST</field>
+		<value name="VALUE">
+			<block type="variables_get">
+			<field name="VAR" id="cZu0g~S;L.v,R7:PZm~3">text</field>
+			</block>
+		</value>
+		<value name="FIND">
+			<shadow type="text">
+			<field name="TEXT">abc</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="text_charAt">
+		<mutation at="true"></mutation>
+		<field name="WHERE">FROM_START</field>
+		<value name="VALUE">
+			<block type="variables_get">
+			<field name="VAR" id="cZu0g~S;L.v,R7:PZm~3">text</field>
+			</block>
+		</value>
+		</block>
+		<block type="text_getSubstring">
+		<mutation at1="true" at2="true"></mutation>
+		<field name="WHERE1">FROM_START</field>
+		<field name="WHERE2">FROM_START</field>
+		<value name="STRING">
+			<block type="variables_get">
+			<field name="VAR" id="cZu0g~S;L.v,R7:PZm~3">text</field>
+			</block>
+		</value>
+		</block>
+		<block type="text_changeCase">
+		<field name="CASE">UPPERCASE</field>
+		<value name="TEXT">
+			<shadow type="text">
+			<field name="TEXT">abc</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="text_trim">
+		<field name="MODE">BOTH</field>
+		<value name="TEXT">
+			<shadow type="text">
+			<field name="TEXT">abc</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="text_print">
+		<value name="TEXT">
+			<shadow type="text">
+			<field name="TEXT">abc</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="text_prompt_ext">
+		<mutation type="TEXT"></mutation>
+		<field name="TYPE">TEXT</field>
+		<value name="TEXT">
+			<shadow type="text">
+			<field name="TEXT">abc</field>
+			</shadow>
+		</value>
+		</block>
+	</category>
+	<category name="${BlocklyLocale.ListCategory}" colour="#745ba5">
+		<block type="lists_create_with">
+		<mutation items="0"></mutation>
+		</block>
+		<block type="lists_create_with">
+		<mutation items="3"></mutation>
+		</block>
+		<block type="lists_repeat">
+		<value name="NUM">
+			<shadow type="math_number">
+			<field name="NUM">5</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="lists_length"></block>
+		<block type="lists_isEmpty"></block>
+		<block type="lists_indexOf">
+		<field name="END">FIRST</field>
+		<value name="VALUE">
+			<block type="variables_get">
+			<field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
+			</block>
+		</value>
+		</block>
+		<block type="lists_getIndex">
+		<mutation statement="false" at="true"></mutation>
+		<field name="MODE">GET</field>
+		<field name="WHERE">FROM_START</field>
+		<value name="VALUE">
+			<block type="variables_get">
+			<field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
+			</block>
+		</value>
+		</block>
+		<block type="lists_setIndex">
+		<mutation at="true"></mutation>
+		<field name="MODE">SET</field>
+		<field name="WHERE">FROM_START</field>
+		<value name="LIST">
+			<block type="variables_get">
+			<field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
+			</block>
+		</value>
+		</block>
+		<block type="lists_getSublist">
+		<mutation at1="true" at2="true"></mutation>
+		<field name="WHERE1">FROM_START</field>
+		<field name="WHERE2">FROM_START</field>
+		<value name="LIST">
+			<block type="variables_get">
+			<field name="VAR" id="-hbRDCa(~y6co@wAQ04y">list</field>
+			</block>
+		</value>
+		</block>
+		<block type="lists_split">
+		<mutation mode="SPLIT"></mutation>
+		<field name="MODE">SPLIT</field>
+		<value name="DELIM">
+			<shadow type="text">
+			<field name="TEXT">,</field>
+			</shadow>
+		</value>
+		</block>
+		<block type="lists_sort">
+		<field name="TYPE">NUMERIC</field>
+		<field name="DIRECTION">1</field>
+		</block>
+	</category>
+	<sep></sep>
+	<category name="${BlocklyLocale.VariableCategory}" colour="#a55b80" custom="VARIABLE"></category>
+	<category name="${BlocklyLocale.ProcedureCategory}" colour="#995ba5" custom="PROCEDURE"></category>
+	<sep></sep>`;
 }
 
 function xml(BlocklyLocale) {
