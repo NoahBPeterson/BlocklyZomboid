@@ -14,6 +14,6 @@ export const BlocklyLocale = {
         VariableCategory: "Variables",
         ProcedureCategory: "Procedures",
 
-        ConsoleInterfaceCategory: "Logging",
-            ConsoleOutputLog: "Output log",
+        RecipeCategory: "Recipes",
+            RecipeList: "CreateRecipe",
 }
