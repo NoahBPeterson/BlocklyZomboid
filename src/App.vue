@@ -37,7 +37,7 @@
 
 <script>
 import BlocklyComponent from "./components/BlocklyComponent.vue";
-import addCustomBlocks from "./blocks/stocks";
+import addCustomBlocks from "./blocks/customBlocks";
 
 import Blockly from "blockly";
 // import BlocklyJS from "blockly/javascript";

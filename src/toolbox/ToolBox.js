@@ -88,7 +88,9 @@ export class ToolboxClass {
 			return '';
 		let xml = `<category name="${name}" colour="${category.color}">`;
 		category.blocks.forEach(element => {
-			xml += element.getBlockXML(element);
+			if (element instanceof BlockObject) {
+				xml += element.getBlockXML();
+			}
 		});
 		xml += `</category>`;
 		return xml;
@@ -97,7 +99,8 @@ export class ToolboxClass {
 	getBlockXML(block) {
 		if (block == null)
 			return '';
-		let blockXML = `<${block.xmlType} type="${block.type}" name="${block.name} id="${block.id}">${block.value}`;
+		let blockXML = `<${block.xmlType} ${this.stringOrEmpty("type", block.type)} ${this.stringOrEmpty("name", block.name)} ${this.stringOrEmpty("id", block.id)}>${this.stringOrEmpty("", block.value)}`;
+		//let blockXML = `<${block.xmlType} type="${block.type}" name="${block.name} id="${block.id}">${block.value}`;
 		if (block.subfields == null)
 			block.subfields = [];
 		block.subfields.forEach(element => {
@@ -112,15 +115,13 @@ export class ToolboxClass {
 	
 		this.addBlockToCategory(BlocklyLocale.RecipeCategory, 
 			new BlockObject("block", "recipe_list", "", "", "", [
-				new BlockObject("")
+				new BlockObject("field", "", "item_name", "Item Name", "", [])
 			]));
 
-		// addBlockObject(xmlType = "", type = "", name = "", value = "", id="", subfields = [])
+		// new BlockObject(xmlType = "", type = "", name = "", value = "", id="", subfields = [])
 		return this;
 	}
 }
-
-
 
 function blocklyDefaultToolbox(BlocklyLocale) {
     return `
@@ -443,11 +444,39 @@ function blocklyDefaultToolbox(BlocklyLocale) {
 	<sep></sep>`;
 }
 
+function RecipeCategoryToolbox(BlocklyLocale) {
+	return `
+	<category name="${BlocklyLocale.RecipeCategory}" colour="#111213">
+		<block type="item_list"></block>
+		<block type="recipe">
+			<value name="recipe_ingredients">
+				<block type="item_list"></block>
+			</value>
+			<value name="recipe_result">
+				<block type="item_list"></block>
+			</value>
+			<value name="recipe_category">
+				<block type="text">
+				</block>
+			</value>
+			<value name="recipe_time">
+				<block type="math_number"></block>
+			</value>
+	  	</block>
+		<block type="keep_item">
+			<value name="kept_item">
+				<block type="item_list"></block>
+			</value>
+		</block>
+	</category>`;
+}
+
 function xml(BlocklyLocale) {
+	// new ToolboxClass().blocklytoolbox_Functions(BlocklyLocale).getCategoryXML(BlocklyLocale.RecipeCategory)
     return `
     <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
         ${blocklyDefaultToolbox(BlocklyLocale)}    
-     	${new ToolboxClass().blocklytoolbox_Functions(BlocklyLocale).getCategoryXML(BlocklyLocale.RecipeCategory)}
+     	${RecipeCategoryToolbox(BlocklyLocale)}
     </xml>`;
 }
 

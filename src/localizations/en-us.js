@@ -16,4 +16,8 @@ export const BlocklyLocale = {
 
         RecipeCategory: "Recipes",
             RecipeList: "CreateRecipe",
+            RecipeIngredients: "Recipe Ingredients:",
+            RecipeResult: "Recipe Result:",
+            RecipeCategoryName: "Recipe Category:",
+            RecipeTime: "Recipe Time:",
 }

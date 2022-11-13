@@ -1,25 +1,13 @@
 import * as Blockly from 'blockly/core';
 // import 'blockly/generators/lua';
-
-
+import addRecipeBlocks from './recipeCategoryBlocks';
 
 export default function addCustomBlocks(BlocklyLocale) {
-  Blockly.Blocks['log'] = {
-    init: function () {
-      this.appendValueInput("uni")
-        .setCheck("String")
-        .appendField(`${BlocklyLocale.ConsoleOutputLog}：`);
-      this.setPreviousStatement(true, null);
-      this.setNextStatement(true, null);
-      this.setColour(230);
-      this.setTooltip("");
-      this.setHelpUrl("");
-    }
-  };Blockly.Lua['log'] = function (block) {
-    var value_uni = Blockly.Lua.valueToCode(block, 'uni', Blockly.Lua.ORDER_ATOMIC);
-    var code = 'log' + '(' + value_uni + ')' + ';\n';
-    return code;
-  };
+  addRecipeBlocks(BlocklyLocale);
+  
+
+  
+
   
   Blockly.Blocks['colorlog'] = {
     init: function() {
