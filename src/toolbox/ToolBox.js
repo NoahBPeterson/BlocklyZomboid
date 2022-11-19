@@ -456,13 +456,13 @@ function RecipeCategoryToolbox(BlocklyLocale) {
 				<block type="item_list"></block>
 			</value>
 			<value name="recipe_category">
-				<block type="text">
+				<block type="crafting_category">
 				</block>
 			</value>
 			<value name="recipe_time">
 				<block type="math_number"></block>
 			</value>
-	  	</block>
+    </block>
 		<block type="keep_item">
 			<value name="kept_item">
 				<block type="item_list"></block>
@@ -476,7 +476,7 @@ function xml(BlocklyLocale) {
     return `
     <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
         ${blocklyDefaultToolbox(BlocklyLocale)}    
-     	${RecipeCategoryToolbox(BlocklyLocale)}
+     	  ${RecipeCategoryToolbox(BlocklyLocale)}
     </xml>`;
 }
 

@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <BlocklyComponent id="blockly" :options="options" ref="foo" xml="" @mouseover="showCode()" @click="showCode()"></BlocklyComponent>
+        <BlocklyComponent id="blockly" :options="options" ref="foo" xml="" @mouseenter="showCode()" @keypress="showCode()" @click="showCode()"></BlocklyComponent>
         <div id="code">
           <a href="https://pzwiki.net/wiki/Modding" target="_blank">
             <button id="menubuttons" style="color:#ffffff;background-color:#008766;font-weight:bold;">
@@ -29,8 +29,17 @@
           </div>
           <!-- <input ref="filElem" type="file" class="upload-file" style="display: none" @change="getFile"> -->
           
-          
-          <pre v-html="code"></pre>
+          <pre></pre>
+          <div class="tab">
+            <button id="menubuttons" @mousedown="tabChange('Lua')">Lua</button>
+            <button id="menubuttons" @mousedown="tabChange('Scripts')">Scripts</button>
+          </div>
+          <div id="Lua" class="tabcontent active">
+            <pre v-html="code"></pre>
+          </div>
+          <div id="Scripts" class="tabcontent">
+            <pre v-html="scripts"></pre>
+          </div>
         </div> 
     </div>
 </template>
@@ -70,6 +79,7 @@ export default {
         return {
             BlocklyLocale: blocklyLocale,
             code: "",
+            scripts: "",
             options: {
                 media: "media/",
                 grid: {
@@ -116,7 +126,14 @@ export default {
             }
         },
         showCode() {
+          let codePlusScripts = BlocklyLua.workspaceToCode(this.$refs["foo"].workspace);
+          let scripts = codePlusScripts.substring(codePlusScripts.indexOf('Recipe'))
+          codePlusScripts.split()
+            scripts = scripts.substring(0, codePlusScripts.indexOf('}'));
           this.code = BlocklyLua.workspaceToCode(this.$refs["foo"].workspace);
+          this.saveToCookies();
+        },
+        saveToCookies() {
           var xml = Blockly.Xml.workspaceToDom(Blockly.getMainWorkspace());
           var xml_text = Blockly.Xml.domToText(xml);
           document.cookie = xml_text;
@@ -133,7 +150,11 @@ export default {
           let serverLua = lua.folder("server");
 
           let scripts = media.folder("scripts");
-          console.log(shared+clientLua+serverLua+scripts);
+          let ui = media.folder("ui");
+          let music = media.folder("music");
+          console.log(shared+clientLua+serverLua+scripts+ui+music);
+
+          scripts.file("scripts_test.txt", this.code);
 
           zip.generateAsync({type:"blob"}).then(function(content) {
             FileSaver.saveAs(content, "example.zip");
@@ -196,7 +217,25 @@ export default {
               }
             };
             fr.readAsText(fileInput.files[0]);
-        }
+        },
+        tabChange(tabName) {
+          // Declare all variables
+          var i, tabcontent, tablinks;
+          // Get all elements with class="tabcontent" and hide them
+          tabcontent = document.getElementsByClassName("tabcontent");
+          for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+          }
+
+          // Get all elements with class="tablinks" and remove the class "active"
+          tablinks = document.getElementsByClassName("tablinks");
+          for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+          }
+
+          // Show the current tab, and add an "active" class to the button that opened the tab
+          document.getElementById(tabName).style.display = "block";
+        } 
     },
 };
 </script>
@@ -277,4 +316,41 @@ button {
   width: 70%;
   height: 100%;
 }
+
+ /* Style the tab; Below CSS taken from https://www.w3schools.com/howto/howto_js_tabs.asp*/
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
 </style>

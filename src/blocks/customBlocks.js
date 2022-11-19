@@ -4,11 +4,7 @@ import addRecipeBlocks from './recipeCategoryBlocks';
 
 export default function addCustomBlocks(BlocklyLocale) {
   addRecipeBlocks(BlocklyLocale);
-  
 
-  
-
-  
   Blockly.Blocks['colorlog'] = {
     init: function() {
       this.appendValueInput("log")

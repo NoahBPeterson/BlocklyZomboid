@@ -25,17 +25,24 @@ export default function addRecipeBlocks(BlocklyLocale) {
         }
     };Blockly.Lua['recipe'] = function(block) {
         var text_recipe_name = block.getFieldValue('recipe_name');
-        var statements_recipe_ingredients = Blockly.Lua.statementToCode(block, 'recipe_ingredients');
-        var statements_recipe_result = Blockly.Lua.statementToCode(block, 'recipe_result');
-        var statements_recipe_category = Blockly.Lua.valueToCode(block, 'recipe_category', Blockly.Lua.ORDER_ATOMIC);
+        var statements_recipe_ingredients = Blockly.Lua.statementToCode(block, 'recipe_ingredients')
+          /*.replaceAll(' ', "")
+          .replaceAll('\t', '')
+          .replace('keep', 'keep ')*/;
+        var statements_recipe_result = Blockly.Lua.statementToCode(block, 'recipe_result')
+          .replaceAll(' ', '')
+          .replaceAll('\t', '');
+        var statements_recipe_category = Blockly.Lua.statementToCode(block, 'recipe_category')
+          .replaceAll(' ', '')
+          .replaceAll('\t', '');
         var value_recipe_time = Blockly.Lua.valueToCode(block, 'recipe_time', Blockly.Lua.ORDER_ATOMIC);
 
-        var code = `#Recipe#\nRecipe ${text_recipe_name}\n {\n }` + 
-            statements_recipe_category +
-            statements_recipe_ingredients +
-            statements_recipe_result +
-            value_recipe_time +
-            `\n#Recipe#`;
+        var code = 
+          `Recipe ${text_recipe_name}\n`+
+          `{\n\t${statements_recipe_ingredients},\n\n` +
+          `\tResult:${statements_recipe_result}\n`+
+          `\tTime:${(Math.round(value_recipe_time*10) /10).toFixed(1)}\n`+
+          `\tCategory:${statements_recipe_category}\n}`
             /*
                 recipe Convert vanilla to ORGM 9x19mm FMJ
                 {
@@ -133,5 +140,22 @@ export default function addRecipeBlocks(BlocklyLocale) {
         var value_uni = Blockly.JavaScript.valueToCode(block, 'uni', Blockly.JavaScript.ORDER_ATOMIC);
         var code = 'log' + '(' + value_uni + ')' + ';\n';
         return code;
+      };
+
+      Blockly.Blocks['crafting_category'] = {
+        init: function() {
+          this.appendDummyInput()
+              .appendField("Crafting Category:")
+              .appendField(new Blockly.FieldDropdown([["General","General"], ["Survivalist","Survivalist"], ["Farming","Farming"], ["Cooking","Cooking"], ["Carpentry","Carpentry"], ["Health","Health"], ["Hunting","Hunting"], ["Electrical","Electrical"], ["Metalworking","Metalworking"], ["Fishing","Fishing"]]), "crafting_category_value");
+          this.setOutput(true, "String");
+          this.setColour(165);
+       this.setTooltip("Select the category for this crafting recipe.");
+       this.setHelpUrl("https://pzwiki.net/wiki/Crafting");
+        }
+      };
+
+      Blockly.Lua['crafting_category'] = function(block) {
+        var dropdown_crafting_category_value = block.getFieldValue('crafting_category_value');
+        return dropdown_crafting_category_value;
       };
 }
