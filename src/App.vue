@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <BlocklyComponent id="blockly" :options="options" ref="foo" xml="" @mouseenter="showCode()" @keypress="showCode()" @click="showCode()"></BlocklyComponent>
+        <BlocklyComponent id="blockly" :options="options" ref="foo" xml="" @mousedown="showCode()" @keypress="showCode()" @click="showCode()"></BlocklyComponent>
         <div id="code">
           <a href="https://pzwiki.net/wiki/Modding" target="_blank">
             <button id="menubuttons" style="color:#ffffff;background-color:#008766;font-weight:bold;">
@@ -21,7 +21,7 @@
             <svg id="edcD1BShn9F1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 640 640" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"><g transform="matrix(2.5 0 0 1.75-476.329552-39.889714)"><line x1="0" y1="-128.689884" x2="0" y2="-27.689884" transform="matrix(25 0 0 1 320 233.341149)" fill="none" stroke="#fff" stroke-width="3"/><polygon points="0,-12.923474 11.192057,6.461737 -11.192057,6.461737 0,-12.923474" transform="matrix(-6.704883 0 0-5.297823 320 216.774109)" fill="#fff" stroke-width="0"/></g><rect width="342.385" height="46.4345" rx="0" ry="0" transform="matrix(1.082173 0 0-1.020139 138.410548 542.086399)" fill="#fff" stroke-width="0"/></svg>
           </button>
           <div>
-          <img style="vertical-align:middle;" src="./media/languageicon.png">
+          &nbsp;<img style="vertical-align:middle;" src="./media/languageicon.png">&nbsp;
           <select style="marginTop: 5px;">
               <!--option class="language_option" id="zh_hans_option" @click="language('zh-hans')">中文</option-->
               <option class="language_option" id="en_US_option" @click="language('en-US')">English</option>
@@ -127,10 +127,10 @@ export default {
         },
         showCode() {
           let codePlusScripts = BlocklyLua.workspaceToCode(this.$refs["foo"].workspace);
-          let scripts = codePlusScripts.substring(codePlusScripts.indexOf('Recipe'))
-          codePlusScripts.split()
-            scripts = scripts.substring(0, codePlusScripts.indexOf('}'));
+          let scripts = codePlusScripts.substring(codePlusScripts.indexOf('Recipe'));
+          scripts = scripts.substring(0, codePlusScripts.indexOf('}')+1);
           this.code = BlocklyLua.workspaceToCode(this.$refs["foo"].workspace);
+          this.scripts = scripts;
           this.saveToCookies();
         },
         saveToCookies() {

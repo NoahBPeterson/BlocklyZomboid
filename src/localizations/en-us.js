@@ -20,4 +20,9 @@ export const BlocklyLocale = {
             RecipeResult: "Recipe Result:",
             RecipeCategoryName: "Recipe Category:",
             RecipeTime: "Recipe Time:",
+            RecipeName: "Recipe Name:",
+            NameOfRecipe: "Name of Recipe",
+            DefaultItem: "Base.Axe",
+            KeepItemTooltip: "Keep this item when done crafting.",
+            DontKeepItemTooltip: "Don't keep this item when done crafting.",
 }

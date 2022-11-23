@@ -447,13 +447,17 @@ function blocklyDefaultToolbox(BlocklyLocale) {
 function RecipeCategoryToolbox(BlocklyLocale) {
 	return `
 	<category name="${BlocklyLocale.RecipeCategory}" colour="#111213">
-		<block type="item_list"></block>
+		<block type="item"></block>
 		<block type="recipe">
 			<value name="recipe_ingredients">
 				<block type="item_list"></block>
 			</value>
 			<value name="recipe_result">
-				<block type="item_list"></block>
+				<block type="item_statement">
+					<value name="item_val">
+						<block type="item"></block>
+					</value>
+				</block>
 			</value>
 			<value name="recipe_category">
 				<block type="crafting_category">
@@ -462,10 +466,10 @@ function RecipeCategoryToolbox(BlocklyLocale) {
 			<value name="recipe_time">
 				<block type="math_number"></block>
 			</value>
-    </block>
+    	</block>
 		<block type="keep_item">
 			<value name="kept_item">
-				<block type="item_list"></block>
+				<block type="item"></block>
 			</value>
 		</block>
 	</category>`;
@@ -476,7 +480,7 @@ function xml(BlocklyLocale) {
     return `
     <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
         ${blocklyDefaultToolbox(BlocklyLocale)}    
-     	  ${RecipeCategoryToolbox(BlocklyLocale)}
+     	${RecipeCategoryToolbox(BlocklyLocale)}
     </xml>`;
 }
 
