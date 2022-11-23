@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <BlocklyComponent id="blockly" :options="options" ref="foo" xml="" @mousedown="showCode()" @keypress="showCode()" @click="showCode()"></BlocklyComponent>
+        <BlocklyComponent id="blockly" :options="options" ref="foo" xml="" @mouseup="showCode()" @keypress="showCode()" @click="showCode()"></BlocklyComponent>
         <div id="code">
           <a href="https://pzwiki.net/wiki/Modding" target="_blank">
             <button id="menubuttons" style="color:#ffffff;background-color:#008766;font-weight:bold;">
@@ -140,7 +140,7 @@ export default {
         },
         download() {
           const zip = JSZip();
-          zip.file("mod.info", "Hname=My First Mod\nposter=poster.png\nid=MyFirst\ndescription=Basic example mod\nurl=https://theindiestone.com/forums/");
+          zip.file("mod.info", "name=My First Mod\nposter=poster.png\nid=MyFirst\ndescription=Basic example mod\nurl=https://theindiestone.com/forums/");
 
           const media = zip.folder("media");
 
